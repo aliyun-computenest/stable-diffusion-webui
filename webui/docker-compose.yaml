@@ -1,0 +1,20 @@
+services:
+  sd-webui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7680:7680"
+    restart: unless-stopped
+    volumes:
+      - /home/models/:/workspace/stable-diffusion-webui/models/
+      - /home/extentions/:/workspace/stable-diffusion-webui/extensions/
+      - /home/embeddings/:/workspace/stable-diffusion-webui/embeddings/
+      - /home/ComfyUI/:/workspace/ComfyUI/
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
