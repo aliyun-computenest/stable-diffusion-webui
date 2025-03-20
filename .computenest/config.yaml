@@ -64,9 +64,9 @@ Artifact:
       SourceImageId: "m-t4n5vjxqjtxthpzqju5m"
       CommandContent: |-
         mkdir -p /root/application
-        if [ -e "/root/code/stable-diffusion-webui" ]; then cp -r "/root/code/stable-diffusion-webui" "/root/application/"; fi
+        if [ -e "/root/code/webui" ]; then cp -r "/root/code/webui" "/root/application/"; fi
         if [ -e "/root/code/.env" ]; then cp -r "/root/code/.env" "/root/application/"; fi
         cd /root/application
-        sed -i 's/pull_policy: always/pull_policy: if_not_present/g' stable-diffusion-webui/webui/docker-compose.yaml
-        docker compose -f stable-diffusion-webui/webui/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
-        docker compose -f stable-diffusion-webui/webui/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
+        sed -i 's/pull_policy: always/pull_policy: if_not_present/g' webui/docker-compose.yaml
+        docker compose -f webui/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+        docker compose -f webui/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
