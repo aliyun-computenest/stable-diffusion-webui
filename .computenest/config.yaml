@@ -61,7 +61,7 @@ Artifact:
         Branch: main
       RegionId: ap-southeast-1
       CommandType: RunShellScript
-      SourceImageId: "m-t4n5vjxqjtxthpzqju5m"
+      SourceImageId: "m-t4n6sxczpkxp92ittvkn"
       CommandContent: |-
         mkdir -p /root/application
         if [ -e "/root/code/webui" ]; then cp -r "/root/code/webui" "/root/application/"; fi
