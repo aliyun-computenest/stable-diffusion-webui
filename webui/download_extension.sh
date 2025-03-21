@@ -55,3 +55,5 @@ clone https://github.com/jexom/sd-webui-depth-lib.git
 clone https://github.com/Bing-su/adetailer.git
 
 clone https://github.com/AIrjen/OneButtonPrompt.git
+
+clone https://github.com/dtlnor/stable-diffusion-webui-localization-zh_CN.git
