@@ -8,13 +8,19 @@ WORKDIR /workspace/stable-diffusion-webui
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     apt-get update && apt-get install -y --no-install-recommends git ffmpeg libgl1 aria2 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-#RUN /workspace/miniconda/bin/pip uninstall mediapipe -y &&  \
-#    /workspace/miniconda/bin/pip install PyExecJS boto3 aliyun-python-sdk-core aliyun-python-sdk-alimt pyarrow>=4.0 --force
+
 
 RUN rm -rf /workspace/stable-diffusion-webui/
 WORKDIR /workspace
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git
 WORKDIR /workspace/stable-diffusion-webui
+RUN mkdir -p repositories \
+ && cd repositories \
+ && git clone https://github.com/Stability-AI/stablediffusion stable-diffusion-stability-ai \
+ && git clone https://github.com/Stability-AI/generative-models \
+ && git clone https://github.com/crowsonkb/k-diffusion \
+ && git clone https://github.com/salesforce/BLIP \
+ && git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui-assets
 RUN pip install -r requirements.txt
 
 COPY download_extension.sh /workspace/stable-diffusion-webui/
