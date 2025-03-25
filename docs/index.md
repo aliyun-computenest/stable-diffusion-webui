@@ -66,7 +66,7 @@ stable-diffusion服务需要对ECS、VPC等资源进行访问和创建操作，�
    ![img.jpg](img/3.jpg)
 
 3. 完成验证后即可访问：
-   ![img.jpg](img/5.jpg)
+   ![img.jpg](img/5.png)
 
 
 ### 设置中文菜单
