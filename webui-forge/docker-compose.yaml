@@ -1,0 +1,19 @@
+services:
+  sd-webui-forge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7680:7680"
+    restart: unless-stopped
+    volumes:
+      - /home/models/:/workspace/stable-diffusion-webui-forge/models/
+      - /home/extentions/:/workspace/stable-diffusion-webui-forge/extensions/
+      - /home/embeddings/:/workspace/stable-diffusion-webui-forge/embeddings/
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

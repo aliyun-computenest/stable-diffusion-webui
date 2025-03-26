@@ -3,14 +3,31 @@ Service:
   DeployType: ros
   OperationMetadata:
     StatusOperationConfigs:
-      - TemplateName: ECS单机版
+      - TemplateName: SD原生版本
+        SupportOperations:
+          - Start
+          - Stop
+          - Restart
+      - TemplateName: SD-Forge版本
         SupportOperations:
           - Start
           - Stop
           - Restart
     SupportBackup: true
     ModifyParametersConfig:
-      - TemplateName: ECS单机版
+      - TemplateName: SD原生版本
+        Operation:
+          - Name: 变更ECS实例规格
+            Description: 变更ECS实例规格
+            Type: Custom
+            Parameters:
+              - EcsInstanceType
+          - Name: 变更ECS实例密码
+            Description: 变更ECS实例密码
+            Type: Custom
+            Parameters:
+              - InstancePassword
+      - TemplateName: SD-Forge版本
         Operation:
           - Name: 变更ECS实例规格
             Description: 变更ECS实例规格
@@ -25,7 +42,12 @@ Service:
   DeployMetadata:
     SupplierDeployMetadata:
       SupplierTemplateConfigs:
-        - Name: ECS单机版
+        - Name: SD原生版本
+          Url: 'ros_templates/template.yaml'
+          ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
+          AllowedRegions:
+            - ap-southeast-1
+        - Name: SD-Forge版本
           Url: 'ros_templates/template.yaml'
           ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
           AllowedRegions:
@@ -34,9 +56,17 @@ Service:
         ecs_image-stable-diffusion-webui:
           ArtifactId: ${Artifact.EcsImage.ArtifactId}
           ArtifactVersion: draft
+        ecs_image-stable-diffusion-webui-forge:
+          ArtifactId: ${Artifact.EcsImageForge.ArtifactId}
+          ArtifactVersion: draft
     TemplateConfigs:
-      - Name: ECS单机版
+      - Name: SD原生版本
         Url: 'ros_templates/template.yaml'
+        ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
+        AllowedRegions:
+          - ap-southeast-1
+      - Name: SD-Forge版本
+        Url: 'ros_templates/template-forge.yaml'
         ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
         AllowedRegions:
           - ap-southeast-1
@@ -70,3 +100,26 @@ Artifact:
         sed -i 's/pull_policy: always/pull_policy: if_not_present/g' webui/docker-compose.yaml
         docker compose -f webui/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
         docker compose -f webui/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
+  EcsImageForge:
+    ArtifactType: EcsImage
+    ArtifactName: ecs_image-stable-diffusion-webui-forge
+    Description: stable-diffusion ui EcsImage forge version
+    SupportRegionIds:
+      - ap-southeast-1
+    ArtifactBuildProperty:
+      CodeRepo:
+        Platform: github
+        Owner: LYH-RAIN
+        RepoName: aliyun-computenest/stable-diffusion-webui
+        Branch: main
+      RegionId: ap-southeast-1
+      CommandType: RunShellScript
+      SourceImageId: "m-t4ngjsk56pbei5qryne3"
+      CommandContent: |-
+        mkdir -p /root/application
+        if [ -e "/root/code/webui-forge" ]; then cp -r "/root/code/webui-forge" "/root/application/"; fi
+        if [ -e "/root/code/.env" ]; then cp -r "/root/code/.env" "/root/application/"; fi
+        cd /root/application
+        sed -i 's/pull_policy: always/pull_policy: if_not_present/g' webui-forge/docker-compose.yaml
+        docker compose -f webui-forge/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+        docker compose -f webui-forge/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
