@@ -2,7 +2,7 @@ services:
   sd-webui-forge:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-forge
     ports:
       - "7680:7680"
     restart: unless-stopped
