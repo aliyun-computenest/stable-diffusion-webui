@@ -274,7 +274,7 @@ Resources:
         Ref: ZoneId
       SecurityGroupId:
         Ref: SecurityGroup
-      ImageId: ecs_image-stable-diffusion-webui
+      ImageId: ecs_image-stable-diffusion-webui-forge
       Password:
         Ref: InstancePassword
       InstanceType:
