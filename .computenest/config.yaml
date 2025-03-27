@@ -82,7 +82,7 @@ Artifact:
     ArtifactName: ecs_image-stable-diffusion-webui
     Description: stable-diffusion ui EcsImage
     SupportRegionIds:
-        - ap-southeast-1
+      - ap-southeast-1
     ArtifactBuildProperty:
       CodeRepo:
         Platform: github
