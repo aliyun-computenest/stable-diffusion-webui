@@ -48,7 +48,7 @@ Service:
           AllowedRegions:
             - ap-southeast-1
         - Name: SD-Forge版本
-          Url: 'ros_templates/template.yaml'
+          Url: 'ros_templates/template-forge.yaml'
           ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
           AllowedRegions:
             - ap-southeast-1
