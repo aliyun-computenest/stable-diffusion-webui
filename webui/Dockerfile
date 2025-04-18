@@ -24,6 +24,8 @@ RUN mkdir -p repositories \
 RUN pip install -r requirements.txt
 
 COPY download_extension.sh /workspace/stable-diffusion-webui/
+RUN git config --global url."https://ghfast.top/https://github.com/".insteadOf "https://github.com/"
+
 RUN chmod +x /workspace/stable-diffusion-webui/download_extension.sh && \
     /workspace/stable-diffusion-webui/download_extension.sh
 
