@@ -80,7 +80,7 @@ ImageBuilder:
   EcsImage:
     RegionId: ap-southeast-1
     SourceImageId: m-t4n7hdik5d6zppvw5u9u
-    SystemDiskSize: 100
+    SystemDiskSize: 200
     InstanceType: ecs.gn7i-c8g1.2xlarge
     InternetMaxBandwidthOut: 100
     CommandType: RunShellScript
@@ -93,7 +93,7 @@ ImageBuilder:
   EcsImageForge:
     RegionId: ap-southeast-1
     SourceImageId: m-t4ngjsk56pbei5qryne3
-    SystemDiskSize: 100
+    SystemDiskSize: 200
     InstanceType: ecs.gn7i-c8g1.2xlarge
     InternetMaxBandwidthOut: 100
     CommandType: RunShellScript
