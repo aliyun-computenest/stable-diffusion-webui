@@ -10,6 +10,7 @@ services:
       - /home/models/:/workspace/stable-diffusion-webui-forge/models/
       - /home/extentions/:/workspace/stable-diffusion-webui-forge/extensions/
       - /home/embeddings/:/workspace/stable-diffusion-webui-forge/embeddings/
+      - /etc/hosts:/etc/hosts
     deploy:
       resources:
         reservations:

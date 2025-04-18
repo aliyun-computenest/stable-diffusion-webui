@@ -11,6 +11,7 @@ services:
       - /home/extentions/:/workspace/stable-diffusion-webui/extensions/
       - /home/embeddings/:/workspace/stable-diffusion-webui/embeddings/
       - /home/ComfyUI/:/workspace/ComfyUI/
+      - /etc/hosts:/etc/hosts
     deploy:
       resources:
         reservations:

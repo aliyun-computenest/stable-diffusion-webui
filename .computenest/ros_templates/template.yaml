@@ -135,8 +135,6 @@ Parameters:
           - ecs.gn6i
           - ecs.gn6e
           - ecs.gn6v
-          - ecs.vgn6i-vws
-          - ecs.vgn7i-vws
           - ecs.ebmgn8v
           - ecs.ebmgn8is
           - ecs.ebmgn7ex
@@ -281,7 +279,7 @@ Resources:
         Ref: EcsInstanceType
       SystemDiskCategory: cloud_essd
       SystemDiskSize: 200
-      InternetMaxBandwidthOut: 5
+      InternetMaxBandwidthOut: 10
       IoOptimized: optimized
       MaxAmount: 1
   RunInstallCommand:
@@ -297,6 +295,10 @@ Resources:
       CommandContent:
         Fn::Sub:
           - |
+            echo "140.82.114.4 github.com" >> /etc/hosts 
+            echo "140.82.114.10 nodeload.github.com" >> /etc/hosts 
+            echo "140.82.114.6 api.github.com" >> /etc/hosts 
+            echo "140.82.114.10 codeload.github.com" >> /etc/hosts
             file_path="/etc/systemd/system/stable-diffusion-webui.service"
             if [ ! -f "$file_path" ]; then
             cat > $file_path <<EOF
@@ -309,18 +311,35 @@ Resources:
             Type=oneshot
             RemainAfterExit=yes
             WorkingDirectory=/root/application
-            ExecStart=/usr/bin/docker compose -f webui/docker-compose.yaml up -d
+            ExecStart=/bin/bash -c '/usr/bin/docker compose -f webui/docker-compose.yaml up -d'
             ExecStop=/usr/bin/docker compose down
             TimeoutStartSec=0
 
             [Install]
             WantedBy=multi-user.target
             EOF
+
             systemctl enable stable-diffusion-webui
-            
             fi
             systemctl daemon-reload
             systemctl start stable-diffusion-webui
+            
+            cd /root/application/webui
+            MAX_TIMEOUT=1800
+            INTERVAL=10
+            MAX_ATTEMPTS=$((MAX_TIMEOUT / INTERVAL))
+
+            for ((i=1; i<=MAX_ATTEMPTS; i++))
+              do
+                LATEST_LOG=$(docker compose logs 2>&1 | tail -n 10)
+                if echo "$LATEST_LOG" | grep -q "Running on local URL"
+                  then
+                    echo "success"
+                    exit 0
+                  else
+                    sleep $INTERVAL
+              fi
+            done
           - RegionId:
               Ref: ALIYUN::Region
 Outputs:
@@ -337,6 +356,11 @@ Outputs:
               - Fn::GetAtt:
                   - InstanceGroup
                   - PrivateIps
+  webui_info:
+    Description:
+      en: webui info
+      zh-cn: webui 版本说明
+    Value: "本版本为SD原生版本，不支持Flux模型。如有相关需求请尝试部署SD-Forge版本"
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
