@@ -76,6 +76,33 @@ Service:
     - Locale: zh-CN
       ShortDescription: demo
       Image: 'resources/icons/service_logo.png'
+ImageBuilder:
+  EcsImage:
+    RegionId: cn-hangzhou
+    SourceImageId: m-t4n7hdik5d6zppvw5u9u
+    SystemDiskSize: 100
+    InstanceType: ecs.gn7i-c8g1.2xlarge
+    InternetMaxBandwidthOut: 100
+    CommandType: RunShellScript
+    Timeout: 10800
+    CommandContent: |-
+      git clone https://github.com/aliyun-computenest/stable-diffusion-webui
+      cd stable-diffusion-webui/webui
+      docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+      docker compose up -d;
+  EcsImageForge:
+    RegionId: ap-southeast-1
+    SourceImageId: m-t4ngjsk56pbei5qryne3
+    SystemDiskSize: 100
+    InstanceType: ecs.gn7i-c8g1.2xlarge
+    InternetMaxBandwidthOut: 100
+    CommandType: RunShellScript
+    Timeout: 10800
+    CommandContent: |-
+      git clone https://github.com/aliyun-computenest/stable-diffusion-webui
+      cd stable-diffusion-webui/webui-forge
+      docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+      docker compose up -d;
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
@@ -83,43 +110,15 @@ Artifact:
     Description: stable-diffusion ui EcsImage
     SupportRegionIds:
       - ap-southeast-1
-    ArtifactBuildProperty:
-      CodeRepo:
-        Platform: github
-        Owner: LYH-RAIN
-        RepoName: aliyun-computenest/stable-diffusion-webui
-        Branch: main
-      RegionId: ap-southeast-1
-      CommandType: RunShellScript
-      SourceImageId: "m-t4n7hdik5d6zppvw5u9u"
-      CommandContent: |-
-        mkdir -p /root/application
-        if [ -e "/root/code/webui" ]; then cp -r "/root/code/webui" "/root/application/"; fi
-        if [ -e "/root/code/.env" ]; then cp -r "/root/code/.env" "/root/application/"; fi
-        cd /root/application
-        sed -i 's/pull_policy: always/pull_policy: if_not_present/g' webui/docker-compose.yaml
-        docker compose -f webui/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
-        docker compose -f webui/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
+    ArtifactProperty:
+      RegionId: ${ImageBuilder.EcsImage.RegionId}
+      ImageId: ${ImageBuilder.EcsImage.SourceImageId}
   EcsImageForge:
     ArtifactType: EcsImage
     ArtifactName: ecs_image-stable-diffusion-webui-forge
     Description: stable-diffusion ui EcsImage forge version
     SupportRegionIds:
       - ap-southeast-1
-    ArtifactBuildProperty:
-      CodeRepo:
-        Platform: github
-        Owner: LYH-RAIN
-        RepoName: aliyun-computenest/stable-diffusion-webui
-        Branch: main
-      RegionId: ap-southeast-1
-      CommandType: RunShellScript
-      SourceImageId: "m-t4ngjsk56pbei5qryne3"
-      CommandContent: |-
-        mkdir -p /root/application
-        if [ -e "/root/code/webui-forge" ]; then cp -r "/root/code/webui-forge" "/root/application/"; fi
-        if [ -e "/root/code/.env" ]; then cp -r "/root/code/.env" "/root/application/"; fi
-        cd /root/application
-        sed -i 's/pull_policy: always/pull_policy: if_not_present/g' webui-forge/docker-compose.yaml
-        docker compose -f webui-forge/docker-compose.yaml build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
-        docker compose -f webui-forge/docker-compose.yaml pull 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded' || true;
+    ArtifactProperty:
+      RegionId: ${ImageBuilder.EcsImageForge.RegionId}
+      ImageId: ${ImageBuilder.EcsImageForge.SourceImageId}
