@@ -26,7 +26,7 @@ RUN pip install -r requirements_versions.txt
 COPY download_extension.sh /workspace/stable-diffusion-webui-forge/
 RUN chmod +x /workspace/stable-diffusion-webui-forge/download_extension.sh && \
     /workspace/stable-diffusion-webui-forge/download_extension.sh
-RUN git config --global url."https://ghfast.top/https://github.com/".insteadOf "https://github.com/"
+RUN #git config --global url."https://ghfast.top/https://github.com/".insteadOf "https://github.com/"
 
 
 CMD ["python", "-u", "./launch.py", "--ckpt-dir", "./ckpts", "--listen", "--port", "7680", "--enable-insecure-extension-access", \
