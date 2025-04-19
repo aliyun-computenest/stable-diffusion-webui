@@ -310,7 +310,7 @@ Resources:
             [Service]
             Type=oneshot
             RemainAfterExit=yes
-            WorkingDirectory=/root/application
+            WorkingDirectory=/root/stable-diffusion-webui/
             ExecStart=/bin/bash -c '/usr/bin/docker compose -f webui/docker-compose.yaml up -d'
             ExecStop=/usr/bin/docker compose down
             TimeoutStartSec=0
@@ -324,7 +324,7 @@ Resources:
             systemctl daemon-reload
             systemctl start stable-diffusion-webui
             
-            cd /root/application/webui
+            cd /root/stable-diffusion-webui/webui
             MAX_TIMEOUT=1800
             INTERVAL=10
             MAX_ATTEMPTS=$((MAX_TIMEOUT / INTERVAL))
