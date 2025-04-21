@@ -65,6 +65,10 @@ Service:
         ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
         AllowedRegions:
           - ap-southeast-1
+        OutputConfigs:
+          - OutputKey: mcp_server_address
+            EnableWebProxy:
+              true:
       - Name: SD-Forge版本
         Url: 'ros_templates/template-forge.yaml'
         ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
@@ -90,6 +94,8 @@ ImageBuilder:
       cd stable-diffusion-webui/webui
       docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
       docker compose up -d;
+      sleep 20;
+      docker compose down;
   EcsImageForge:
     RegionId: ap-southeast-1
     SourceImageId: m-t4ngjsk56pbei5qryne3
@@ -103,6 +109,8 @@ ImageBuilder:
       cd stable-diffusion-webui/webui-forge
       docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
       docker compose up -d;
+      sleep 20;
+      docker compose down;
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
