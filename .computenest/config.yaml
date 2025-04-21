@@ -66,7 +66,7 @@ Service:
         AllowedRegions:
           - ap-southeast-1
         OutputConfigs:
-          - OutputKey: mcp_server_address
+          - OutputKey: webui_address
             EnableWebProxy:
               true:
       - Name: SD-Forge版本
@@ -74,6 +74,10 @@ Service:
         ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
         AllowedRegions:
           - ap-southeast-1
+        OutputConfigs:
+          - OutputKey: webui_address
+            EnableWebProxy:
+              true:
   ServiceType: private
   ServiceInfo:
     # 英文版可以再配置Locale为en-US的服务信息
