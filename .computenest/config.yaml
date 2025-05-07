@@ -68,7 +68,7 @@ Service:
         OutputConfigs:
           - OutputKey: webui_address
             EnableWebProxy:
-              true:
+              true
       - Name: SD-Forge版本
         Url: 'ros_templates/template-forge.yaml'
         ArchitectureDiagramUrl: 'resources/architecture/architecture.jpg'
@@ -77,7 +77,7 @@ Service:
         OutputConfigs:
           - OutputKey: webui_address
             EnableWebProxy:
-              true:
+              true
   ServiceType: private
   ServiceInfo:
     # 英文版可以再配置Locale为en-US的服务信息
