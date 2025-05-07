@@ -89,7 +89,7 @@ ImageBuilder:
     RegionId: ap-southeast-1
     SourceImageId: m-t4n7hdik5d6zppvw5u9u
     SystemDiskSize: 200
-    InstanceType: ecs.gn7i-c8g1.2xlarge
+    InstanceType: ecs.gn6v-c8g1.2xlarge
     InternetMaxBandwidthOut: 100
     CommandType: RunShellScript
     Timeout: 10800
@@ -104,7 +104,7 @@ ImageBuilder:
     RegionId: ap-southeast-1
     SourceImageId: m-t4ngjsk56pbei5qryne3
     SystemDiskSize: 200
-    InstanceType: ecs.gn7i-c8g1.2xlarge
+    InstanceType: ecs.gn6v-c8g1.2xlarge
     InternetMaxBandwidthOut: 100
     CommandType: RunShellScript
     Timeout: 10800
