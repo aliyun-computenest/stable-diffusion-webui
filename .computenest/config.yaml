@@ -84,6 +84,7 @@ Service:
     - Locale: zh-CN
       ShortDescription: demo
       Image: 'resources/icons/service_logo.png'
+      Name: Stable Diffusion社区版
 ImageBuilder:
   EcsImage:
     RegionId: ap-southeast-1
