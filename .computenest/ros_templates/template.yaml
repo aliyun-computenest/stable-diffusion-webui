@@ -4,7 +4,51 @@ Conditions:
     Fn::Equals:
       - NewVPC
       - Ref: VpcOption
+  EnableAuthenticationConditions:
+    Fn::Equals:
+      - Enable
+      - Ref: AuthenticationOption
 Parameters:
+  AuthenticationOption:
+    Type: String
+    Label: 是否开启公网访问
+    AllowedValues:
+      - Enable
+      - Disable
+    AssociationPropertyMetadata:
+      ValueLabelMapping:
+        Enable:
+          zh-cn: 开启公网访问
+          en: Enable Public Access
+        Disable:
+          zh-cn: 关闭公网访问
+          en: Disable Public Access
+    Default: Enable
+  API_KEY:
+    Type: String
+    Description:
+      zh-cn: MCP工具key，用于保护您的工具不被公网滥用
+      en: MCP tool key, used to protect your tool from being abused by the public network
+    Required:
+      Fn::Equals:
+        - Enable
+        - ${AuthenticationOption}
+    Default: ""
+    AssociationProperty: AutoCompleteInput
+    AssociationPropertyMetadata:
+      Visible:
+        Condition:
+          Fn::Equals:
+            - Enable
+            - ${AuthenticationOption}
+      Length: 10
+      CharacterClasses:
+        - Class: "lowercase"
+          min: 4
+        - Class: "uppercase"
+          min: 4
+        - Class: "number"
+          min: 2
   VpcOption:
     Type: String
     AllowedValues:
@@ -245,7 +289,11 @@ Resources:
       SecurityGroupIngress:
         - PortRange: 7680/7680
           Priority: 1
-          SourceCidrIp: 100.104.0.0/16
+          SourceCidrIp:
+            Fn::If:
+              - EnableAuthenticationConditions
+              - 0.0.0.0/0
+              - 100.104.0.0/16
           IpProtocol: tcp
           NicType: internet
   InstanceGroup:
@@ -325,6 +373,8 @@ Resources:
             systemctl start stable-diffusion-webui
             
             cd /root/stable-diffusion-webui/webui
+            sed -i "s|\${!API_PASSWORD:-}|${!apikey}|g" /root/application/mcp/docker-compose.yaml
+
             MAX_TIMEOUT=1800
             INTERVAL=10
             MAX_ATTEMPTS=$((MAX_TIMEOUT / INTERVAL))
@@ -342,11 +392,18 @@ Resources:
             done
           - RegionId:
               Ref: ALIYUN::Region
+            apikey:
+              Fn::If:
+                - EnableAuthenticationConditions
+                - Ref: API_KEY
+                - ""
+
+
 Outputs:
   webui_address:
     Description:
-      en: webui address.
-      zh-cn: webui 访问页面。
+      en: webui private address.
+      zh-cn: webui 私网访问页面。
     Value:
       Fn::Sub:
         - http://${ServerAddress}:7680
@@ -356,6 +413,23 @@ Outputs:
               - Fn::GetAtt:
                   - InstanceGroup
                   - PrivateIps
+  webui_public_address:
+    Description:
+      en: webui public address.
+      zh-cn: webui 公网访问页面。
+    Value:
+      Fn::If:
+        - EnableAuthenticationConditions
+        - Fn::Sub:
+            - http://${ServerAddress}:7680
+            - ServerAddress:
+                Fn::Select:
+                  - 0
+                  - Fn::GetAtt:
+                      - InstanceGroup
+                      - PublicIps
+        - "public access is forbidden"
+
   webui_info:
     Description:
       en: webui info
@@ -382,5 +456,7 @@ Metadata:
           - VSwitchId
           - VpcCidrBlock
           - VSwitchCidrBlock
+          - AuthenticationOption
+          - API_KEY
         Label:
           default: 可用区配置

@@ -6,6 +6,8 @@ services:
     ports:
       - "7680:7680"
     restart: unless-stopped
+    environment:
+      - API_PASSWORD=${API_PASSWORD:-}
     volumes:
       - /home/models/:/workspace/stable-diffusion-webui/models/
       - /home/extentions/:/workspace/stable-diffusion-webui/extensions/

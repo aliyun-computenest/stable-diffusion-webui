@@ -29,6 +29,9 @@ RUN #git config --global url."https://ghfast.top/https://github.com/".insteadOf 
 RUN chmod +x /workspace/stable-diffusion-webui/download_extension.sh && \
     /workspace/stable-diffusion-webui/download_extension.sh
 
+# 添加启动脚本
+COPY start.sh /workspace/stable-diffusion-webui/
+RUN chmod +x /workspace/stable-diffusion-webui/start.sh
 
-CMD ["python", "-u", "./launch.py", "--ckpt-dir", "./ckpts", "--listen", "--port", "7680", "--enable-insecure-extension-access", \
-"--disable-safe-unpickle", "--api", "--xformers", "--skip-install"]
+CMD ["/workspace/stable-diffusion-webui/start.sh"]
+
