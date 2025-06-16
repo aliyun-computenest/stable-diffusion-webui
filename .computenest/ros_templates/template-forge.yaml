@@ -24,7 +24,7 @@ Parameters:
           zh-cn: 关闭公网访问
           en: Disable Public Access
     Default: Enable
-  API_KEY:
+  ApiKey:
     Type: String
     Description:
       zh-cn: MCP工具key，用于保护您的工具不被公网滥用
@@ -394,7 +394,7 @@ Resources:
             apikey:
               Fn::If:
                 - EnableAuthenticationConditions
-                - Ref: API_KEY
+                - Ref: ApiKey
                 - ""
 Outputs:
   webui_address:
@@ -450,6 +450,6 @@ Metadata:
           - VpcCidrBlock
           - VSwitchCidrBlock
           - AuthenticationOption
-          - API_KEY
+          - ApiKey
         Label:
           default: 可用区配置
