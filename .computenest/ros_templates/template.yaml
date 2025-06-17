@@ -27,8 +27,8 @@ Parameters:
   ApiKey:
     Type: String
     Description:
-      zh-cn: MCP工具key，用于保护您的工具不被公网滥用
-      en: MCP tool key, used to protect your tool from being abused by the public network
+      zh-cn: ApiKey，用于保护您的工具不被公网滥用
+      en: ApiKey, used to protect your tool from being abused by the public network
     Required:
       Fn::Equals:
         - Enable
@@ -401,7 +401,7 @@ Resources:
 
 Outputs:
   webui_address:
-    Description:
+    Label:
       en: webui private address.
       zh-cn: webui 私网访问页面。
     Value:
@@ -414,7 +414,7 @@ Outputs:
                   - InstanceGroup
                   - PrivateIps
   webui_public_address:
-    Description:
+    Label:
       en: webui public address.
       zh-cn: webui 公网访问页面。
     Value:
@@ -435,6 +435,19 @@ Outputs:
       en: webui info
       zh-cn: webui 版本说明
     Value: "本版本为SD原生版本，不支持Flux模型。如有相关需求请尝试部署SD-Forge版本"
+  ApiKey:
+    NoEcho: 'True'
+    Label:
+      en: API key
+      zh-cn: API KEY
+    Description:
+      en: If you have not enabled authentication, please ignore this output value
+      zh-cn: 如果未开启认证，请忽略此输出值
+    Value:
+      Fn::If:
+        - EnableAuthenticationConditions
+        - Ref: ApiKey
+        - "Authentication is disabled"
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
