@@ -203,17 +203,15 @@ Parameters:
             - ExistingVPC
             - ${VpcOption}
 Resources:
-  ApiKey:
+  RandomApiKey:
     Type: ALIYUN::RandomString
     Properties:
-      length: 10
+      length: 29
       character_classes:
-        - class: "lowercase"
-          min: 4
-        - class: "uppercase"
-          min: 4
-        - class: "digits"
-          min: 2
+        - class: lowercase
+          min: 1
+        - class: digits
+          min: 1
   RandomPassword:
     Type: ALIYUN::RandomString
     Properties:
@@ -345,7 +343,7 @@ Resources:
             systemctl daemon-reload
             systemctl start stable-diffusion-webui-forge
             cd /root/stable-diffusion-webui/webui-forge
-            sed -i "s|\${!API_PASSWORD:-}|${!apikey}|g" webui-forge/docker-compose.yaml
+            sed -i "s|\${!API_PASSWORD:-}|${!apikey}|g" docker-compose.yaml
 
             MAX_TIMEOUT=1800
             INTERVAL=10
@@ -365,9 +363,12 @@ Resources:
           - RegionId:
               Ref: ALIYUN::Region
             apikey:
-              Fn::GetAtt:
-                - ApiKey
-                - value
+              Fn::Join:
+                - '-'
+                - - 'sk'
+                  - Fn::GetAtt:
+                      - RandomApiKey
+                      - value
 Outputs:
   Label:
     Description:
@@ -401,17 +402,15 @@ Outputs:
   webui_info:
     Value: "本版本为SD-Forge版本，支持Flux模型。"
   ApiKey:
-    NoEcho: 'True'
-    Label:
-      en: API key
-      zh-cn: API KEY
-    Description:
-      en: If you have not enabled authentication, please ignore this output value
-      zh-cn: 如果未开启认证，请忽略此输出值
+    NoEcho: true
+    Label: API Key
     Value:
-      Fn::GetAtt:
-        - ApiKey
-        - value
+      Fn::Join:
+        - '-'
+        - - 'sk'
+          - Fn::GetAtt:
+              - RandomApiKey
+              - value
   InstancePassword:
     NoEcho: 'True'
     Label:
