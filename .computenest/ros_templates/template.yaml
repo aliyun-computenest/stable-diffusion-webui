@@ -4,51 +4,16 @@ Conditions:
     Fn::Equals:
       - NewVPC
       - Ref: VpcOption
-  EnableAuthenticationConditions:
+  EnablePublicAccess:
     Fn::Equals:
-      - Enable
-      - Ref: AuthenticationOption
+      - True
+      - Ref: SupportPublicAccess
 Parameters:
-  AuthenticationOption:
-    Type: String
-    Label: 是否开启公网访问
-    AllowedValues:
-      - Enable
-      - Disable
-    AssociationPropertyMetadata:
-      ValueLabelMapping:
-        Enable:
-          zh-cn: 开启公网访问
-          en: Enable Public Access
-        Disable:
-          zh-cn: 关闭公网访问
-          en: Disable Public Access
-    Default: Enable
-  ApiKey:
-    Type: String
-    Description:
-      zh-cn: ApiKey，用于保护您的工具不被公网滥用
-      en: ApiKey, used to protect your tool from being abused by the public network
-    Required:
-      Fn::Equals:
-        - Enable
-        - ${AuthenticationOption}
-    Default: ""
-    AssociationProperty: AutoCompleteInput
-    AssociationPropertyMetadata:
-      Visible:
-        Condition:
-          Fn::Equals:
-            - Enable
-            - ${AuthenticationOption}
-      Length: 10
-      CharacterClasses:
-        - Class: "lowercase"
-          min: 4
-        - Class: "uppercase"
-          min: 4
-        - Class: "number"
-          min: 2
+  SupportPublicAccess:
+    Type: Boolean
+    Label:
+      zh-cn: 支持公网访问
+      en: Support Public Access
   VpcOption:
     Type: String
     AllowedValues:
@@ -188,22 +153,6 @@ Parameters:
           - ecs.ebmgn7vx
           - ecs.ebmgn7v
           - ecs.ebmgn7
-  InstancePassword:
-    NoEcho: true
-    Type: String
-    Description:
-      en: Server login password, Length 8-30, must contain three(Capital letters, lowercase letters, numbers, ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ Special symbol in)
-      zh-cn: 服务器登录密码,长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ 中的特殊符号）
-    AllowedPattern: '^[a-zA-Z0-9-\(\)\`\~\!\@\#\$\%\^\&\*\_\-\+\=\|\{\}\[\]\:\;\<\>\,\.\?\/]*$'
-    Label:
-      en: Instance Password
-      zh-cn: 实例密码
-    ConstraintDescription:
-      en: Length 8-30, must contain three(Capital letters, lowercase letters, numbers, ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ Special symbol in)
-      zh-cn: 长度8-30，必须包含三项（大写字母、小写字母、数字、 ()`~!@#$%^&*_-+=|{}[]:;'<>,.?/ 中的特殊符号）
-    MinLength: 8
-    MaxLength: 30
-    AssociationProperty: ALIYUN::ECS::Instance::Password
   ZoneId:
     Type: String
     Label:
@@ -254,6 +203,31 @@ Parameters:
             - ExistingVPC
             - ${VpcOption}
 Resources:
+  ApiKey:
+    Type: ALIYUN::RandomString
+    Properties:
+      length: 10
+      character_classes:
+        - class: "lowercase"
+          min: 4
+        - class: "uppercase"
+          min: 4
+        - class: "digits"
+          min: 2
+
+  RandomPassword:
+    Type: ALIYUN::RandomString
+    Properties:
+      length: 11
+      character_classes:
+        - class: "lowercase"
+          min: 4
+        - class: "uppercase"
+          min: 4
+        - class: "digits"
+          min: 2
+      character_sequences:
+        - sequence: "!@#$^*-+="
   # 新建vpc
   EcsVpc:
     Type: ALIYUN::ECS::VPC
@@ -291,7 +265,7 @@ Resources:
           Priority: 1
           SourceCidrIp:
             Fn::If:
-              - EnableAuthenticationConditions
+              - EnablePublicAccess
               - 0.0.0.0/0
               - 100.104.0.0/16
           IpProtocol: tcp
@@ -322,7 +296,7 @@ Resources:
         Ref: SecurityGroup
       ImageId: ecs_image-stable-diffusion-webui
       Password:
-        Ref: InstancePassword
+        Ref: RandomPassword
       InstanceType:
         Ref: EcsInstanceType
       SystemDiskCategory: cloud_essd
@@ -373,7 +347,7 @@ Resources:
             systemctl start stable-diffusion-webui
             
             cd /root/stable-diffusion-webui/webui
-            sed -i "s|\${!API_PASSWORD:-}|${!apikey}|g" /root/application/mcp/docker-compose.yaml
+            sed -i "s|\${!API_PASSWORD:-}|${!apikey}|g" webui/docker-compose.yaml
 
             MAX_TIMEOUT=1800
             INTERVAL=10
@@ -393,10 +367,9 @@ Resources:
           - RegionId:
               Ref: ALIYUN::Region
             apikey:
-              Fn::If:
-                - EnableAuthenticationConditions
-                - Ref: ApiKey
-                - ""
+              Fn::GetAtt:
+                - ApiKey
+                - value
 
 
 Outputs:
@@ -419,7 +392,7 @@ Outputs:
       zh-cn: webui 公网访问页面。
     Value:
       Fn::If:
-        - EnableAuthenticationConditions
+        - EnablePublicAccess
         - Fn::Sub:
             - http://${ServerAddress}:7680
             - ServerAddress:
@@ -444,10 +417,22 @@ Outputs:
       en: If you have not enabled authentication, please ignore this output value
       zh-cn: 如果未开启认证，请忽略此输出值
     Value:
-      Fn::If:
-        - EnableAuthenticationConditions
-        - Ref: ApiKey
-        - "Authentication is disabled"
+      Fn::GetAtt:
+        - ApiKey
+        - value
+  InstancePassword:
+    NoEcho: 'True'
+    Label:
+      en: Ecs Instance password
+      zh-cn: ECS实例密码
+    Description:
+      en: Initial instance password
+      zh-cn: ECS实例密码
+    Value:
+      Fn::GetAtt:
+        - RandomPassword
+        - value
+
 Metadata:
   ALIYUN::ROS::Interface:
     ParameterGroups:
@@ -459,7 +444,6 @@ Metadata:
           default: 付费类型配置
       - Parameters:
           - EcsInstanceType
-          - InstancePassword
         Label:
           default: 资源配置
       - Parameters:
@@ -469,7 +453,6 @@ Metadata:
           - VSwitchId
           - VpcCidrBlock
           - VSwitchCidrBlock
-          - AuthenticationOption
-          - ApiKey
+          - SupportPublicAccess
         Label:
           default: 可用区配置
