@@ -370,7 +370,7 @@ Resources:
                       - RandomApiKey
                       - value
 Outputs:
-  Label:
+  inner:
     Description:
       en: webui private address.
       zh-cn: webui 私网访问页面。
