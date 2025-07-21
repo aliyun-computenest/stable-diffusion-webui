@@ -1,0 +1,9 @@
+---
+parameters:
+  VpcCidrBlock: "192.168.0.0/16"
+  SupportPublicAccess: "True"
+  VpcOption: "NewVPC"
+  PayType: "PostPaid"
+  EcsInstanceType: "ecs.gn6i-c4g1.xlarge"
+  VSwitchCidrBlock: "192.168.1.0/24"
+templateName: SD原生版本
