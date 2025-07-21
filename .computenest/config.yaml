@@ -92,7 +92,7 @@ Artifact:
       CommandType: RunShellScript
       CommandContent: |-
         git clone https://github.com/aliyun-computenest/stable-diffusion-webui
-        cd stable-diffusion-webui/webui-forge
+        cd stable-diffusion-webui/webui
         docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
         docker compose up -d;
         sleep 20;
@@ -113,7 +113,7 @@ Artifact:
       CommandType: RunShellScript
       CommandContent: |-
         git clone https://github.com/aliyun-computenest/stable-diffusion-webui
-        cd stable-diffusion-webui/webui
+        cd stable-diffusion-webui/webui-forge
         docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
         docker compose up -d;
         sleep 20;
