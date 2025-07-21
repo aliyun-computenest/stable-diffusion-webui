@@ -75,37 +75,6 @@ Service:
       ShortDescription: demo
       Image: 'resources/icons/service_logo.png'
       Name: Stable Diffusion社区版
-ImageBuilder:
-  EcsImage:
-    RegionId: ap-southeast-1
-    SourceImageId: m-t4n7hdik5d6zppvw5u9u
-    SystemDiskSize: 200
-    InstanceType: ecs.gn6i-c4g1.xlarge
-    InternetMaxBandwidthOut: 100
-    CommandType: RunShellScript
-    Timeout: 10800
-    CommandContent: |-
-      git clone https://github.com/aliyun-computenest/stable-diffusion-webui
-      cd stable-diffusion-webui/webui
-      docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
-      docker compose up -d;
-      sleep 20;
-      docker compose down;
-  EcsImageForge:
-    RegionId: ap-southeast-1
-    SourceImageId: m-t4ngjsk56pbei5qryne3
-    SystemDiskSize: 200
-    InstanceType: ecs.gn6i-c4g1.xlarge
-    InternetMaxBandwidthOut: 100
-    CommandType: RunShellScript
-    Timeout: 10800
-    CommandContent: |-
-      git clone https://github.com/aliyun-computenest/stable-diffusion-webui
-      cd stable-diffusion-webui/webui-forge
-      docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
-      docker compose up -d;
-      sleep 20;
-      docker compose down;
 Artifact:
   EcsImage:
     ArtifactType: EcsImage
@@ -114,8 +83,20 @@ Artifact:
     SupportRegionIds:
       - ap-southeast-1
     ArtifactProperty:
-      RegionId: ${ImageBuilder.EcsImage.RegionId}
-      ImageId: ${ImageBuilder.EcsImage.SourceImageId}
+      RegionId: ap-southeast-1
+    ArtifactBuildProperty:
+      EnableGpu: true
+      RegionId: ap-southeast-1
+      SourceImageId: "aliyun/services/computenest/images/ai/video/sd"
+      SystemDiskSize: 200
+      CommandType: RunShellScript
+      CommandContent: |-
+        git clone https://github.com/aliyun-computenest/stable-diffusion-webui
+        cd stable-diffusion-webui/webui-forge
+        docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+        docker compose up -d;
+        sleep 20;
+        docker compose down;
   EcsImageForge:
     ArtifactType: EcsImage
     ArtifactName: ecs_image-stable-diffusion-webui-forge
@@ -123,5 +104,17 @@ Artifact:
     SupportRegionIds:
       - ap-southeast-1
     ArtifactProperty:
-      RegionId: ${ImageBuilder.EcsImageForge.RegionId}
-      ImageId: ${ImageBuilder.EcsImageForge.SourceImageId}
+      RegionId: ap-southeast-1
+    ArtifactBuildProperty:
+      EnableGpu: true
+      RegionId: ap-southeast-1
+      SourceImageId: "aliyun/services/computenest/images/ai/video/flux"
+      SystemDiskSize: 200
+      CommandType: RunShellScript
+      CommandContent: |-
+        git clone https://github.com/aliyun-computenest/stable-diffusion-webui
+        cd stable-diffusion-webui/webui
+        docker compose -f build 2>&1 | stdbuf -oL grep -viE 'Downloading|sha256|extracting|KiB|Downloaded';
+        docker compose up -d;
+        sleep 20;
+        docker compose down;
